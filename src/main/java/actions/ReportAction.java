@@ -7,11 +7,13 @@ import java.util.List;
 import javax.servlet.ServletException;
 
 import actions.views.EmployeeView;
+import actions.views.GoodView;
 import actions.views.ReportView;
 import constants.AttributeConst;
 import constants.ForwardConst;
 import constants.JpaConst;
 import constants.MessageConst;
+import services.GoodService;
 import services.ReportService;
 
 /**
@@ -64,6 +66,7 @@ public class ReportAction extends ActionBase {
         //一覧画面を表示
         forward(ForwardConst.FW_REP_INDEX);
     }
+
     /**
      * 新規登録画面を表示する
      * @throws ServletException
@@ -82,6 +85,7 @@ public class ReportAction extends ActionBase {
         forward(ForwardConst.FW_REP_NEW);
 
     }
+
     /**
      * 新規登録を行う
      * @throws ServletException
@@ -138,6 +142,7 @@ public class ReportAction extends ActionBase {
             }
         }
     }
+
     /**
      * 詳細画面を表示する
      * @throws ServletException
@@ -155,11 +160,17 @@ public class ReportAction extends ActionBase {
         } else {
 
             putRequestScope(AttributeConst.REPORT, rv); //取得した日報データ
-
+            //セッションにフラッシュメッセージが設定されている場合はリクエストスコープに移し替え、セッションからは削除する
+            String flush = getSessionScope(AttributeConst.FLUSH);
+            if (flush != null) {
+                putRequestScope(AttributeConst.FLUSH, flush);
+                removeSessionScope(AttributeConst.FLUSH);
+            }
             //詳細画面を表示
             forward(ForwardConst.FW_REP_SHOW);
         }
     }
+
     /**
      * 編集画面を表示する
      * @throws ServletException
@@ -187,6 +198,7 @@ public class ReportAction extends ActionBase {
             forward(ForwardConst.FW_REP_EDIT);
         }
     }
+
     /**
      * 更新を行う
      * @throws ServletException
@@ -228,6 +240,38 @@ public class ReportAction extends ActionBase {
 
             }
         }
+    }
+
+    public void good() throws ServletException, IOException {
+        System.out.println("成功");
+
+        //セッションからログイン中の従業員情報を取得
+        EmployeeView ev = (EmployeeView) getSessionScope(AttributeConst.LOGIN_EMP);
+        //idを条件に日報データを取得する
+        ReportView rv = service.findOne(toNumber(getRequestParam(AttributeConst.REP_ID)));
+        System.out.println("成功");
+
+        //パラメータの値をもとに日報情報のインスタンスを作成する
+        GoodView gv = new GoodView(
+                null,
+                ev, //ログインしている従業員を、日報作成者として登録する
+                rv);
+
+        //いいね情報登録
+        GoodService goodService = new GoodService();
+        goodService.create(gv);
+        //フラッシュメッセージ
+        request.getSession().setAttribute("flush", rv.getEmployee().getName() + "さんの日報にいいねしました！");
+        //一覧画面にリダイレクト
+        //idを条件に日報データを取得する
+
+        putRequestScope(AttributeConst.REPORT, rv); //取得した日報データ
+
+        //詳細画面を表示
+        forward(ForwardConst.FW_REP_SHOW);
+
+        System.out.println("成功２");
+
     }
 
 }

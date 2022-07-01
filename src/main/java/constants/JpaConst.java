@@ -63,4 +63,10 @@ public interface JpaConst {
     String Q_REP_COUNT_ALL_MINE = ENTITY_REP + ".countAllMine";
     String Q_REP_COUNT_ALL_MINE_DEF = "SELECT COUNT(r) FROM Report AS r WHERE r.employee = :" + JPQL_PARM_EMPLOYEE;
 
+    //いいねテーブル
+    String TABLE_GOO = "good";
+    //いいねテーブルカラム
+    String GOO_COL_ID = "id";
+    String GOO_COL_EMPLOYEE_ID = "employee_id";
+    String GOO_COL_REPORT_ID = "report_id";
 }

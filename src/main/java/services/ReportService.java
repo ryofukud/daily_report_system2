@@ -96,6 +96,8 @@ public class ReportService extends ServiceBase {
         //バリデーションで発生したエラーを返却（エラーがなければ0件の空リスト）
         return errors;
     }
+    
+    
 
     /**
      * 画面から入力された日報の登録内容を元に、日報データを更新する
